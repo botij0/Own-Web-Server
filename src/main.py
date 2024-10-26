@@ -4,6 +4,8 @@ Simple HTTP/1.0 Server
 
 import socket
 
+from utils.logger import logger
+
 SERVER_HOST = "0.0.0.0"
 SERVER_PORT = 8000
 
@@ -20,13 +22,13 @@ def main():
 
     # Listen incoming conns: 1 -> size of the buffer.
     server_socket.listen(1)
-    print(f"Listening on port...{SERVER_PORT}")
+    logger.info(f"Listening on port...{SERVER_PORT}")
 
     while True:
         client_connection, client_address = server_socket.accept()
 
         request = client_connection.recv(1024).decode()
-        print(request)
+        logger.info(request)
 
         response = "HTTP/1.0 200 OK\n\nHello World"
         client_connection.sendall(response.encode())
