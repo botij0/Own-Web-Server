@@ -15,6 +15,18 @@ def main():
     server_socket.listen(1)
     print(f"Listening on port...{SERVER_PORT}")
 
+    while True:
+        client_connection, client_address = server_socket.accept()
+
+        request = client_connection.recv(1024).decode()
+        print(request)
+
+        response = "HTTP/1.0 200 OK\n\nHello World"
+        client_connection.sendall(response.encode())
+        client_connection.close()
+
+    server_socket.close()
+
 
 if __name__ == "__main__":
     main()
