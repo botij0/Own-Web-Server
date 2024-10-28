@@ -10,7 +10,7 @@ def main():
     server_socket = get_socket()
     while True:
         client_connection, client_address = server_socket.accept()
-        request = client_connection.recv(1024).decode()
+        request = client_connection.recv(1024).decode("utf-8", errors="replace")
 
         # Only Supports GET Method
         response = http_get_handler(request)
