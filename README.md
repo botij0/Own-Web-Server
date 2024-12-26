@@ -3,5 +3,5 @@
 ## TODO:
 - [ ] Accepts Main HTTP Methods: GET, POST, PUT, DELETE.
 - [ ] Response in Multiple Languages.
-- [ ] Image Support.
+- [x] Image Support.
 - [ ] Pretty Terminal Log
