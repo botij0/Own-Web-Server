@@ -15,7 +15,7 @@ def main():
         # Only Supports GET Method
         response = http_get_handler(request)
 
-        client_connection.sendall(response.encode())
+        client_connection.sendall(response)
         client_connection.close()
 
     server_socket.close()

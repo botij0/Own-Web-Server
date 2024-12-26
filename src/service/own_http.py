@@ -1,10 +1,6 @@
 from utils.logger import logger
-from utils.common import get_file_name
+from utils.common import get_file_name, is_an_image
 from constants.constants import VIEWS_URL, HttpResponse
-
-
-def identify_request(request: str) -> str:
-    return request
 
 
 def http_get_handler(request: str) -> str:
@@ -12,14 +8,22 @@ def http_get_handler(request: str) -> str:
     logger.info("Requested File: " + filename)
     response = ""
     try:
-        file = open(VIEWS_URL + filename)
-        content = file.read()
-        file.close()
-        response = str(HttpResponse.OK) + content
+        if is_an_image(filename):
+            with open(VIEWS_URL + filename, "rb") as f:
+                content = HttpResponse.OK.value.encode() + f.read()
+                logger.info(f"Image {filename} sended succesfully")
+                return content
+        else:
+            with open(VIEWS_URL + filename) as f:
+                response = HttpResponse.OK.value + f.read()
+
     except FileNotFoundError:
         logger.error(f"File: {filename} not found")
-        response = str(HttpResponse.NOT_FOUND) + f"File: {filename} not found"
+        response = HttpResponse.NOT_FOUND.value + f"File: {filename} not found"
+
     except Exception as e:
         logger.error(f"Error Opening File: {e}")
-        response = str(HttpResponse.INTERNAL_SERVER_ERROR) + str(e)
-    return response
+        response = HttpResponse.INTERNAL_SERVER_ERROR.value + str(e)
+
+    logger.info(f"File {filename} sended succesfully")
+    return response.encode()
