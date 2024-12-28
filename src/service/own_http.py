@@ -1,3 +1,5 @@
+import os
+
 from utils.logger import logger
 from utils.common import get_file_name, is_an_image
 from constants.constants import VIEWS_URL, HttpResponse, PUBLIC_URL
@@ -5,6 +7,8 @@ from constants.constants import VIEWS_URL, HttpResponse, PUBLIC_URL
 
 def get_response(request: bytes) -> bytes:
     headers = request.decode("utf-8", errors="replace").split("\n")[0]
+    if len(headers) < 0:
+        return b""
     logger.info("Request: " + str(headers))
     method = headers.split(" ")[0]
     match method:
@@ -12,9 +16,27 @@ def get_response(request: bytes) -> bytes:
             return get_handler(headers)
         case "POST":
             return post_handler(request)
+        case "DELETE":
+            return delete_handler(headers)
 
         case _:
             return HttpResponse.METHOD_NOT_ALLOWED.value.encode()
+
+
+def delete_handler(headers: str) -> bytes:
+    filename = get_file_name(headers)
+    try:
+        os.remove(PUBLIC_URL + filename)
+        logger.info(f"200 OK - file {filename} deleted succesfully")
+        return HttpResponse.OK.value.encode()
+
+    except FileNotFoundError:
+        logger.error(f"404 NOT FOUND - File: {filename} not found")
+        return HttpResponse.NOT_FOUND.value.encode()
+
+    except Exception as e:
+        logger.error(f"Error deleting {filename}: {e}")
+        return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
 
 
 def post_handler(request: bytes) -> bytes:

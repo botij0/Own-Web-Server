@@ -77,7 +77,7 @@ form input[type="file"]:focus {
     border-color: #a777e3;
 }
 
-form button {
+button {
     display: inline-block;
     margin-top: 20px;
     padding: 10px 20px;
@@ -92,7 +92,7 @@ form button {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-form button:hover {
+button:hover {
     background: #a777e3;
     box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.5);
 }

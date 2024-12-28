@@ -16,8 +16,35 @@
                 height="250"
             />
             <br />
-            <br />
             <a href="form.html">Form</a>
+            <br />
+            <br />
+            <button id="deleteButton">Eliminar Imagen</button>
         </div>
     </body>
+
+    <script>
+        document
+            .getElementById("deleteButton")
+            .addEventListener("click", async () => {
+                const url = "http://localhost:8000/main.jpg"; // Cambia la URL al endpoint adecuado
+
+                try {
+                    const response = await fetch(url, {
+                        method: "DELETE",
+                    });
+
+                    if (response.ok) {
+                        alert("La imagen se eliminó correctamente");
+                        window.location.href = "/";
+                    } else {
+                        console.log(response);
+                        alert(`Error: ${response.statusText}`);
+                    }
+                } catch (error) {
+                    alert("Hubo un error al enviar la solicitud DELETE.");
+                    console.error(error);
+                }
+            });
+    </script>
 </html>
