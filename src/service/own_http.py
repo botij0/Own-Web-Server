@@ -5,8 +5,8 @@ from utils.common import get_file_name, is_an_image
 from constants.constants import VIEWS_URL, HttpResponse, PUBLIC_URL
 
 
-def get_response(request: str) -> str:
-    headers = request.split("\n")[0]
+def get_response(request: bytes) -> bytes:
+    headers = request.decode("utf-8", errors="replace").split("\n")[0]
     logger.info("Request: " + str(headers))
     method = headers.split(" ")[0]
     match method:
@@ -19,12 +19,14 @@ def get_response(request: str) -> str:
             return HttpResponse.METHOD_NOT_ALLOWED.value.encode()
 
 
-def post_handler(request: str) -> bytes:
-    file_type, file_content = request.split("Content-Type:")[-1].split("\r\n\r\n")
-    if "image" not in file_type:
+def post_handler(request: bytes) -> bytes:
+    file_type, file_content = request.split(b"Content-Type:")[-1].split(b"\r\n\r\n")
+    if "image" not in file_type.decode():
         return HttpResponse.UNSUPPORTED_MEDIA_TYPE.value.encode()
 
-    filename = re.search(r'filename="([^"]+)"', request).group(1)
+    filename = re.search(
+        r'filename="([^"]+)"', request.decode("utf-8", errors="replace")
+    ).group(1)
 
     try:
         with open(PUBLIC_URL + "/" + filename, "wb") as f:

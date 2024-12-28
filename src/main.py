@@ -6,6 +6,7 @@ import socket
 
 from utils.logger import logger
 from constants.constants import SERVER_HOST, SERVER_PORT
+from utils.common import get_content_lenght
 from service.own_http import get_response
 
 
@@ -13,9 +14,15 @@ def main():
     server_socket = get_socket()
     while True:
         client_connection, client_address = server_socket.accept()
-        request = client_connection.recv(1024).decode("utf-8", errors="replace")
+        request = client_connection.recv(1024)
 
-        # Only Supports GET Method
+        content_length = get_content_lenght(request)
+        body_lenght = len(request[request.find(b"\r\n\r\n") + 4 :])
+
+        while body_lenght < content_length:
+            data = client_connection.recv(1024)
+            request += data
+            body_lenght += len(data)
 
         response = get_response(request)
 
