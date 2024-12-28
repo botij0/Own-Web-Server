@@ -8,12 +8,19 @@
     <body>
         <h1>Formulario Básico</h1>
         <form action="/submit" method="POST" enctype="multipart/form-data">
-            <label for="file">Subir archivo:</label>
-            <input type="file" id="file" name="file" required />
+            <label for="file">Subir imagen JPG/JPEG:</label>
+            <br />
+            <input
+                type="file"
+                id="file"
+                name="file"
+                accept="image/jpeg"
+                required
+            />
             <br /><br />
 
             <button type="submit">Enviar</button>
         </form>
-        <a href="index.html">Go Back</a>
+        <a href="index.html">Go To Main</a>
     </body>
 </html>

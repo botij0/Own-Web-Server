@@ -1,5 +1,3 @@
-import re
-
 from utils.logger import logger
 from utils.common import get_file_name, is_an_image
 from constants.constants import VIEWS_URL, HttpResponse, PUBLIC_URL
@@ -21,21 +19,18 @@ def get_response(request: bytes) -> bytes:
 
 def post_handler(request: bytes) -> bytes:
     file_type, file_content = request.split(b"Content-Type:")[-1].split(b"\r\n\r\n")
-    if "image" not in file_type.decode():
+    if b"image/jpeg" != file_type.strip():
+        logger.error("415 Unsupported Media Type - Image is'nt a JPG")
         return HttpResponse.UNSUPPORTED_MEDIA_TYPE.value.encode()
 
-    filename = re.search(
-        r'filename="([^"]+)"', request.decode("utf-8", errors="replace")
-    ).group(1)
-
     try:
-        with open(PUBLIC_URL + "/" + filename, "wb") as f:
+        with open(PUBLIC_URL + "/main.jpg", "wb") as f:
             f.write(file_content)
     except Exception as e:
         logger.error(f"Error Saving File: {e}")
         return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
 
-    logger.info(f"201 CREATED - Image {filename} saved")
+    logger.info("201 CREATED - Image saved")
 
     try:
         with open(VIEWS_URL + "/index.html", "rb") as f:
@@ -53,25 +48,29 @@ def get_handler(headers: str) -> bytes:
         logger.warning("Empty file requested, returned OK")
         return HttpResponse.OK.value.encode()
 
-    response = ""
-    try:
-        if is_an_image(filename):
-            with open(VIEWS_URL + filename, "rb") as f:
+    if is_an_image(filename):
+        try:
+            with open(PUBLIC_URL + filename, "rb") as f:
                 content = HttpResponse.OK.value.encode() + f.read()
                 logger.info(f"200 OK - Image {filename} sended succesfully")
                 return content
-        else:
+        except FileNotFoundError:
+            logger.error(f"404 NOT FOUND - File: {filename} not found")
+            return HttpResponse.NOT_FOUND_BASIC.value.encode()
+
+        except Exception as e:
+            logger.error(f"Error Opening File: {e}")
+            return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
+    else:
+        try:
             with open(VIEWS_URL + filename) as f:
-                response = HttpResponse.OK.value + f.read()
+                content = HttpResponse.OK.value + f.read()
+                logger.info(f"200 OK - File {filename} sended succesfully")
+                return content.encode()
+        except FileNotFoundError:
+            logger.error(f"404 NOT FOUND - File: {filename} not found")
+            return HttpResponse.NOT_FOUND.value.encode()
 
-    except FileNotFoundError:
-        logger.error(f"404 - File: {filename} not found")
-        response = HttpResponse.NOT_FOUND.value + f"File: {filename} not found"
-
-    except Exception as e:
-        logger.error(f"Error Opening File: {e}")
-        response = HttpResponse.INTERNAL_SERVER_ERROR.value + str(e)
-
-    if filename != "":
-        logger.info(f"200 OK - File {filename} sended succesfully")
-    return response.encode()
+        except Exception as e:
+            logger.error(f"Error Opening File: {e}")
+            return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
