@@ -4,23 +4,26 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Formulario Básico</title>
+        <link rel="stylesheet" href="style/global.css" />
     </head>
     <body>
-        <h1>Formulario Básico</h1>
-        <form action="/submit" method="POST" enctype="multipart/form-data">
-            <label for="file">Subir imagen JPG/JPEG:</label>
-            <br />
-            <input
-                type="file"
-                id="file"
-                name="file"
-                accept="image/jpeg"
-                required
-            />
-            <br /><br />
+        <div>
+            <h1>Formulario Básico</h1>
+            <form action="/submit" method="POST" enctype="multipart/form-data">
+                <label for="file">Subir imagen JPG/JPEG:</label>
+                <br />
+                <input
+                    type="file"
+                    id="file"
+                    name="file"
+                    accept="image/jpeg"
+                    required
+                />
+                <br />
 
-            <button type="submit">Enviar</button>
-        </form>
-        <a href="index.html">Go To Main</a>
+                <button type="submit">Enviar</button>
+            </form>
+            <a href="index.html">Go To Main</a>
+        </div>
     </body>
 </html>
