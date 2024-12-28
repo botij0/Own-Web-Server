@@ -48,29 +48,21 @@ def get_handler(headers: str) -> bytes:
         logger.warning("Empty file requested, returned OK")
         return HttpResponse.OK.value.encode()
 
-    if is_an_image(filename):
-        try:
+    try:
+        if is_an_image(filename):
             with open(PUBLIC_URL + filename, "rb") as f:
                 content = HttpResponse.OK.value.encode() + f.read()
                 logger.info(f"200 OK - Image {filename} sended succesfully")
                 return content
-        except FileNotFoundError:
-            logger.error(f"404 NOT FOUND - File: {filename} not found")
-            return HttpResponse.NOT_FOUND_BASIC.value.encode()
-
-        except Exception as e:
-            logger.error(f"Error Opening File: {e}")
-            return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
-    else:
-        try:
+        else:
             with open(VIEWS_URL + filename) as f:
                 content = HttpResponse.OK.value + f.read()
                 logger.info(f"200 OK - File {filename} sended succesfully")
                 return content.encode()
-        except FileNotFoundError:
-            logger.error(f"404 NOT FOUND - File: {filename} not found")
-            return HttpResponse.NOT_FOUND.value.encode()
+    except FileNotFoundError:
+        logger.error(f"404 NOT FOUND - File: {filename} not found")
+        return HttpResponse.NOT_FOUND.value.encode()
 
-        except Exception as e:
-            logger.error(f"Error Opening File: {e}")
-            return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
+    except Exception as e:
+        logger.error(f"Error Opening File: {e}")
+        return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
