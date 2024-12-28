@@ -35,7 +35,15 @@ def post_handler(request: bytes) -> bytes:
         logger.error(f"Error Saving File: {e}")
         return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
 
-    return HttpResponse.OK.value.encode()
+    logger.info(f"201 CREATED - Image {filename} saved")
+
+    try:
+        with open(VIEWS_URL + "/index.html", "rb") as f:
+            return HttpResponse.CREATED.value.encode() + f.read()
+
+    except Exception as e:
+        logger.error(f"Error redirecting to index.html: {e}")
+        return HttpResponse.INTERNAL_SERVER_ERROR.value.encode() + str(e).encode()
 
 
 def get_handler(headers: str) -> bytes:
